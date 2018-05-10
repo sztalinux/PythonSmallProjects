@@ -1,63 +1,71 @@
-class Moneta:
-    def __init__(self, arg, waluta):
-        if arg in [1, 2, 5, 10, 20, 50, 100, 200, 500]:
-            self._wartosc = arg
-        else:
-            self._wartosc = 0
-        self._waluta = waluta
-
-    def getWart(self):
-        return self._wartosc
-
-    def getWaluta(self):
-        return self._waluta
+from Skarbonka import *
 
 
-class PrzechowywaczMonet:
-    sth = 0
-
-    def __init__(self, arg):
-        self.sth = 0
-        self._nominaly = arg
-        self._zawartosc = []
-
-    def addMoneta(self, nMoneta):
-        if (isinstance(nMoneta, Moneta)):
-            self._zawartosc.append(nMoneta.getWart())
-        else:
-            print("Przesłany obiekt nie jest monetą!")
-
-    def getZawart(self):
-        suma = 0
-        for i in self._zawartosc:
-            suma = suma + i
-        return suma
+def rozbicieSkarbonki():
+    czyUderzyl = False
+    while not czyUderzyl:
+        try:
+            czyRozbic = input("Aby rozbic skarbonke wcisnij T")
+            if czyRozbic == "T":
+                zawartoscRozbitej = skarbonka.rozbij()
+                return zawartoscRozbitej
+            else:
+                pass
+        except UderzylesSieWPalecException as uderz:
+            print(uderz.getMessage())
+            czyUderzyl = True
 
 
-class Skarbonka(PrzechowywaczMonet):
-    def __init__(self, waluta):
-        PrzechowywaczMonet.__init__(self, [1, 2, 5, 10, 20, 50, 100, 200, 500])
-        self.waluta = waluta
+def wprowadzenieMonety():
+    try:
+        walMonety = str.strip((input("Podaj walute")))
+        try:
+            wartMonety = int(input("Podaj wartosc monety w groszach"))
+            skarbonka.addMoneta(Moneta(wartMonety, walMonety))
+        except ValueError:
+            print("Podales nieprawidlowa postac grosza")
 
-    def addMoneta(self, nMoneta):
-        if (not isinstance(nMoneta, Moneta)):
-            print("Przesłany obiekt nie jest monetą")
-        elif(nMoneta.getWaluta() != self.waluta):
-            print("Nieznana waluta dla tej skarbonki")
-        else:
-            self._zawartosc.append(nMoneta.getWart())
+    except ZlyNominalException as zly:
+        print(zly.getMessage())
+    except NieznanaWalutaException as niezn:
+        print(niezn.getMessage())
 
 
-    #def getZawart(self):
-    #    print("Nie można wyciągnąć pojedynczej monety")
+def utworzenieSkarbonki():
+    utworzono = False
+    try:
+        walSkarbonki = str.strip((input("Podaj walute jaka ma przechowywac skarbonka (PLN, GP, EUR)")))
+        skarbonka = Skarbonka(walSkarbonki)
+    except WalutaSkarbonkiException as wal:
+        print(wal.getMessage(), end='\t')
+        print("Sprobuj ponownie!")
+        return (utworzono, 0)
+    else:
+        utworzono = True
+        return (utworzono, skarbonka)
 
 
 if __name__ == '__main__':
-    prz = PrzechowywaczMonet(2)
-    skarbonka = Skarbonka("PLN")
-    skarbonka.addMoneta(Moneta(10, "PLN"))
-    print(skarbonka.getZawart())
-    skarbonka.addMoneta(Moneta(10, "PLN"))
-    print(skarbonka.getZawart())
-    skarbonka.addMoneta(Moneta(10, "EUR"))
-    print(skarbonka.getZawart())
+
+    zawartoscRozbitej = []
+    utworzono = False
+    while not utworzono:
+        utworzono, skarbonka = utworzenieSkarbonki()
+        print(utworzono)
+        print(skarbonka)
+        for i in range(10):
+            if not skarbonka.getRozbita():
+
+                wprowadzenieMonety()
+
+                zawartoscRozbitej = rozbicieSkarbonki()
+
+            else:
+                print("Rozbito skarbonke, oto Twoje monety: {}".format(zawartoscRozbitej))
+                print(skarbonka._zawartosc)
+                nowaSkarbonka = input("Aby utworzyc nowa wcisnij U")
+                if nowaSkarbonka == "U":
+                    utworzono = False
+                else:
+                    pass
+                break
