@@ -2,10 +2,11 @@ from Skarbonka import *
 
 
 def rozbicieSkarbonki():
-    czyUderzyl = False
-    while not czyUderzyl:
+    czyUderzyl = True
+    while czyUderzyl:
+        czyUderzyl = False
         try:
-            czyRozbic = input("Aby rozbic skarbonke wcisnij T")
+            czyRozbic = input("Aby rozbic skarbonke wcisnij T, aby kontynuowac wcisnij inny klawisz")
             if czyRozbic == "T":
                 zawartoscRozbitej = skarbonka.rozbij()
                 return zawartoscRozbitej
@@ -45,27 +46,32 @@ def utworzenieSkarbonki():
         return (utworzono, skarbonka)
 
 
+def czyUtworzycNowaSkarbonke(zawartoscRozbitej):
+    utworzono = True
+    print("Rozbito skarbonke, oto Twoje monety: {}".format(zawartoscRozbitej))
+    nowaSkarbonka = input("Aby utworzyc nowa wcisnij U")
+    if nowaSkarbonka == "U":
+        utworzono = False
+    else:
+        pass
+    return utworzono
+
 if __name__ == '__main__':
 
     zawartoscRozbitej = []
     utworzono = False
     while not utworzono:
         utworzono, skarbonka = utworzenieSkarbonki()
-        print(utworzono)
-        print(skarbonka)
+        if not utworzono:
+            continue
+        else:
+            pass
         for i in range(10):
             if not skarbonka.getRozbita():
 
                 wprowadzenieMonety()
-
                 zawartoscRozbitej = rozbicieSkarbonki()
 
             else:
-                print("Rozbito skarbonke, oto Twoje monety: {}".format(zawartoscRozbitej))
-                print(skarbonka._zawartosc)
-                nowaSkarbonka = input("Aby utworzyc nowa wcisnij U")
-                if nowaSkarbonka == "U":
-                    utworzono = False
-                else:
-                    pass
+                utworzono = czyUtworzycNowaSkarbonke(zawartoscRozbitej)
                 break
